@@ -10,14 +10,19 @@ RUN apt-get update && \
         tzdata \
         tzdata-java \
         openjdk-7-jre-headless \
-        openjdk-7-jre
+        openjdk-7-jre && \
 
 # Build and install https://github.com/prometheus/jmx_exporter
-RUN cd /opt && \
+    cd /opt && \
     git clone --branch ${REPO_TAG} https://github.com/prometheus/jmx_exporter.git && \
     cd /opt/jmx_exporter && \
     mvn package && \
-    dpkg -i /opt/jmx_exporter/jmx_prometheus_httpserver/target/jmx_prometheus_httpserver_${JMX_EXPORTER_VERSION}_all.deb
+    dpkg -i /opt/jmx_exporter/jmx_prometheus_httpserver/target/jmx_prometheus_httpserver_${JMX_EXPORTER_VERSION}_all.deb && \
+
+# Clean up
+    rm -rf /opt/jmx_exporter && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Mount your own config here to override the default
 # VOLUME /etc/jmx_exporter
